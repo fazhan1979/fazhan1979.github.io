@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2022-2025年发表高水平论文数量趋势</title>
+    <!-- 引入 ECharts -->
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f7f9fc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            font-family: 'Arial Unicode MS', 'SimHei', 'PingFang SC', sans-serif;
+            padding: 20px;
+        }
+        .chart-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #ffffff;
+            border-radius: 20px;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            padding: 24px 20px 12px 20px;
+            transition: all 0.2s;
+        }
+        #chart {
+            width: 100%;
+            height: 500px;
+        }
+        .footer-note {
+            text-align: right;
+            font-size: 12px;
+            color: #8c8c8c;
+            margin-top: 8px;
+            padding-right: 8px;
+            letter-spacing: 0.3px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 12px;
+        }
+        @media (max-width: 600px) {
+            .chart-container {
+                padding: 16px 12px 8px 12px;
+            }
+            #chart {
+                height: 380px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="chart-container">
+    <!-- ECharts 挂载点 -->
+    <div id="chart"></div>
+    <div class="footer-note">数据来源于中层干部述职报告</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- 数据 ----------
+        // 年份升序排列：2022 → 2025
+        const years = [2022, 2023, 2024, 2025];
+        const counts = [80, 74, 111, 111];  // 对应 2022→2025
+
+        // 获取 DOM 容器
+        const chartDom = document.getElementById('chart');
+        const myChart = echarts.init(chartDom, null, { renderer: 'canvas' });
+
+        // ---------- 图表配置 ----------
+        const option = {
+            // 整体背景
+            backgroundColor: '#ffffff',
+            color: ['#2E86AB', '#D64933'],
+
+            // 标题
+            title: {
+                text: '2022-2025年发表高水平论文数量趋势',
+                left: 'center',
+                top: 6,
+                textStyle: {
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: '#1e2a36',
+                    fontFamily: 'Arial Unicode MS, SimHei, PingFang SC, sans-serif'
+                }
+            },
+
+            // 提示框
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                backgroundColor: 'rgba(255,255,255,0.92)',
+                borderColor: '#d9d9d9',
+                borderWidth: 1,
+                textStyle: { color: '#1a1a1a', fontSize: 13 },
+                formatter: function(params) {
+                    const bar = params[0];
+                    if (!bar) return '';
+                    return `<strong>${bar.name}</strong><br/>论文数量：<strong>${bar.value}</strong> 篇`;
+                }
+            },
+
+            // 图例
+            legend: {
+                data: ['高水平论文数量', '趋势线'],
+                left: 'left',
+                top: 40,
+                icon: 'circle',
+                itemWidth: 12,
+                itemHeight: 10,
+                textStyle: { fontSize: 13, fontWeight: 'normal', color: '#2c3e50' },
+                selected: {
+                    '高水平论文数量': true,
+                    '趋势线': true
+                }
+            },
+
+            // 网格
+            grid: {
+                left: 70,
+                right: 30,
+                top: 90,
+                bottom: 50,
+                containLabel: false
+            },
+
+            // X轴: 年份 (升序)
+            xAxis: {
+                type: 'category',
+                data: years,
+                name: '年度',                // X轴标题
+                nameLocation: 'center',
+                nameGap: 30,
+                nameTextStyle: {
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#2c3e50'
+                },
+                axisLine: { lineStyle: { color: '#bbb', width: 1.5 } },
+                axisTick: { alignWithLabel: true },
+                axisLabel: {
+                    fontSize: 13,
+                    fontWeight: '500',
+                    color: '#2c3e50',
+                    interval: 0,
+                },
+                splitLine: { show: false },
+                boundaryGap: true,
+            },
+
+            // Y轴: 数量
+            yAxis: {
+                type: 'value',
+                name: '高水平论文数量',                // Y轴标题
+                nameLocation: 'center',
+                nameGap: 45,
+                nameTextStyle: {
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    color: '#2c3e50'
+                },
+                min: 0,
+                max: 140,
+                splitLine: {
+                    show: true,
+                    lineStyle: { color: '#e0e4e8', type: 'dashed', width: 1 }
+                },
+                axisLine: { show: true, lineStyle: { color: '#bbb', width: 1.5 } },
+                axisLabel: {
+                    fontSize: 13,
+                    fontWeight: '500',
+                    color: '#2c3e50',
+                },
+                interval: 20,
+            },
+
+            // 系列: 柱状图 + 折线图
+            series: [
+                // 1. 柱状图
+                {
+                    name: '高水平论文数量',
+                    type: 'bar',
+                    data: counts,
+                    barWidth: '42%',
+                    itemStyle: {
+                        color: '#2E86AB',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                        borderRadius: [3, 3, 0, 0],
+                        shadowColor: 'rgba(46, 134, 171, 0.25)',
+                        shadowOffsetY: 4,
+                        shadowBlur: 8,
+                    },
+                    label: {
+                        show: true,
+                        position: 'top',
+                        fontWeight: 'bold',
+                        fontSize: 13,
+                        color: '#1e2a36',
+                        formatter: (params) => params.value,
+                        offset: [0, 6],
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            shadowColor: 'rgba(46, 134, 171, 0.5)',
+                            shadowOffsetY: 6,
+                            shadowBlur: 12,
+                        }
+                    },
+                    legendHoverLink: true,
+                },
+                // 2. 趋势线 (无动画)
+                {
+                    name: '趋势线',
+                    type: 'line',
+                    data: counts,
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 8,
+                    lineStyle: {
+                        color: '#D64933',
+                        width: 3,
+                        shadowColor: 'rgba(214, 73, 51, 0.25)',
+                        shadowOffsetY: 4,
+                        shadowBlur: 10,
+                    },
+                    itemStyle: {
+                        color: '#D64933',
+                        borderColor: '#ffffff',
+                        borderWidth: 1.5,
+                    },
+                    areaStyle: undefined,
+                    label: { show: false },
+                    emphasis: {
+                        focus: 'series',
+                        lineStyle: { width: 4 }
+                    },
+                    legendHoverLink: true,
+                    z: 2,
+                }
+            ],
+
+            // 关闭所有动画
+            animation: false,
+        };
+
+        // 设置并渲染
+        myChart.setOption(option);
+
+        // ---------- 响应式 ----------
+        window.addEventListener('resize', function() {
+            myChart.resize();
+        });
+
+        // 移动端适配
+        const mediaQuery = window.matchMedia('(max-width: 600px)');
+        const handleResize = (e) => {
+            if (e.matches) {
+                myChart.setOption({
+                    series: [
+                        { barWidth: '50%' },
+                        { symbolSize: 7 }
+                    ],
+                    xAxis: { 
+                        axisLabel: { fontSize: 12 },
+                        nameTextStyle: { fontSize: 12 }
+                    },
+                    yAxis: { 
+                        axisLabel: { fontSize: 12 },
+                        nameTextStyle: { fontSize: 12 }
+                    },
+                    title: { textStyle: { fontSize: 15 } },
+                });
+            } else {
+                myChart.setOption({
+                    series: [
+                        { barWidth: '42%' },
+                        { symbolSize: 8 }
+                    ],
+                    xAxis: { 
+                        axisLabel: { fontSize: 13 },
+                        nameTextStyle: { fontSize: 14 }
+                    },
+                    yAxis: { 
+                        axisLabel: { fontSize: 13 },
+                        nameTextStyle: { fontSize: 14 }
+                    },
+                    title: { textStyle: { fontSize: 18 } },
+                });
+            }
+        };
+        mediaQuery.addEventListener('change', handleResize);
+        handleResize(mediaQuery);
+
+        window.myChart = myChart;
+    })();
+</script>
+
+</body>
+</html>
